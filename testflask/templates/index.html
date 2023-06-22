@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="mobile-web-app-capable" content="yes" />
+        <title>PyCar</title>
+        <link
+            href="https://fonts.googleapis.com/icon?family=Material+Icons|Material+Icons+Outlined|Material+Symbols+Outlined"
+            rel="stylesheet"
+        />
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+        <style>
+            body {
+                margin: 0;
+                padding: 0;
+                height: 88vh;
+                width: 99%;
+                -webkit-user-select: none;
+                -ms-user-select: none;
+                user-select: none;
+            }
+            .container {
+                width: 100%;
+                height: 100%;
+                display: flex;
+                flex-direction: column;
+                justify-content: space-between;
+            }
+            .section1 {
+                height: 40%;
+                width: 100%;
+            }
+            .section2 {
+                /* position: relative; */
+                height: 50%;
+                width: 100%;
+                display: flex;
+                flex-direction: column;
+                align-items: flex-end;
+                justify-content: flex-end;
+            }
+            .wheel {
+                position: relative;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                height: 200px;
+                width: 200px;
+                border: 1px solid darkcyan;
+                border-radius: 200px;
+                margin-right: 12%;
+                margin-bottom: 10%;
+            }
+            #moveCircle {
+                font-size: 4rem;
+                background-color: white;
+                position: absolute;
+                border-radius: 50px;
+                overflow: hidden;
+                z-index: 2;
+                background-color: darkcyan;
+                color: darkcyan;
+            }
+            .icon {
+                font-size: 4rem;
+                position: absolute;
+                height: fit-content;
+                width: fit-content;
+                color: darkcyan;
+            }
+            .symbol {
+                font-size: 2.5rem;
+                position: absolute;
+                height: fit-content;
+                width: fit-content;
+                color: darkcyan;
+                border: 1px solid darkcyan;
+                border-radius: 50px;
+                padding: 5px;
+            }
+            .axis {
+                position: absolute;
+                height: 50%;
+                width: 50%;
+            }
+            .buzzer {
+                height: fit-content;
+                width: fit-content;
+                color: darkcyan;
+                border: 1px solid darkcyan;
+                font-size: 2.5rem;
+                position: absolute;
+                border-radius: 50px;
+                padding: 5px;
+            }
+            .section3 {
+                height: 10%;
+                width: 100%;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+            }
+            .horizontalAxis {
+                position: relative;
+                width: 80%;
+                height: 1%;
+                border-bottom: 1px dashed darkcyan;
+            }
+            .horizontalCameraIcon {
+                font-size: 2.4rem;
+                color: darkcyan;
+                position: absolute;
+                left: calc(50% - 19px);
+                top: -19px;
+                background-color: white;
+            }
+            .verticalCameraSection {
+                position: absolute;
+                width: 20%;
+                height: fit-content;
+                left: 0;
+                bottom: 10%;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+            }
+            .verticalAxis {
+                position: relative;
+                width: 1%;
+                height: 80%;
+                border-right: 1px dashed darkcyan;
+            }
+            .verticalCameraIcon {
+                font-size: 2.4rem;
+                color: darkcyan;
+                position: absolute;
+                top: calc(50% - 19px);
+                left: -19px;
+                background-color: white;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <div class="section1">
+                <img src="{{ url_for('video_feed') }}" width="100%">
+            </div>
+            <div class="section2">
+                <div class="verticalCameraSection">
+                    <span
+                        class="material-icons-outlined icon"
+                        style="transform: rotateX(180deg); position: relative"
+                        ontouchstart="camVerticalMove(event,'up')"
+                        ontouchend="camVerticalMoveStop(event)"
+                    >
+                        expand_circle_down
+                    </span>
+                    <span
+                        class="material-icons-outlined icon"
+                        style="position: relative"
+                        ontouchstart="camVerticalMove(event,'down')"
+                        ontouchend="camVerticalMoveStop(event)"
+                    >
+                        expand_circle_down
+                    </span>
+                    <!-- <div id="vertcalCameraWay" class="verticalAxis">
+                        <div
+                            style="
+                                position: absolute;
+                                left: -30px;
+                                top: 50%;
+                                border-bottom: 1px dashed darkcyan;
+                                height: 60px;
+                            "
+                        ></div>
+                        <span
+                            id="verticalCameraIcon"
+                            class="material-icons-outlined verticalCameraIcon"
+                            draggable="true"
+                            ontouchmove="camVerMove(event)"
+                        >
+                            face_3
+                        </span>
+                    </div> -->
+                </div>
+                <div id="moveWheel" class="wheel">
+                    <span
+                        id="moveCircle"
+                        class="material-icons-outlined"
+                        draggable="true"
+                        ontouchend="moveEnd(event)"
+                        ontouchmove="touchmove(event)"
+                    >
+                        circle
+                    </span>
+                    <div
+                        class="axis"
+                        style="
+                            border-right: 1px dashed darkcyan;
+                            left: 0;
+                            top: 0;
+                        "
+                    ></div>
+                    <div
+                        class="axis"
+                        style="
+                            border-bottom: 1px dashed darkcyan;
+                            left: 50%;
+                            top: 0;
+                        "
+                    ></div>
+                    <div
+                        class="axis"
+                        style="
+                            border-top: 1px dashed darkcyan;
+                            left: 0;
+                            top: 50%;
+                        "
+                    ></div>
+                    <div
+                        class="axis"
+                        style="
+                            border-left: 1px dashed darkcyan;
+                            left: 50%;
+                            top: 50%;
+                        "
+                    ></div>
+                    <span class="material-icons icon" style="top: -25%">
+                        keyboard_arrow_up
+                    </span>
+                    <span class="material-icons icon" style="bottom: -25%">
+                        keyboard_arrow_down
+                    </span>
+                    <span class="material-icons icon" style="left: -25%">
+                        keyboard_arrow_left
+                    </span>
+                    <span class="material-icons icon" style="right: -25%">
+                        keyboard_arrow_right
+                    </span>
+                    <span
+                        class="material-symbols-outlined symbol"
+                        style="left: -15%; bottom: -15%"
+                        ontouchend="moveEnd(event)"
+                        ontouchstart="leftPressed(event)"
+                    >
+                        replay
+                    </span>
+                    <span
+                        class="material-symbols-outlined symbol"
+                        style="right: -15%; bottom: -15%"
+                        ontouchend="moveEnd(event)"
+                        ontouchstart="rightPressed(event)"
+                    >
+                        forward_media
+                    </span>
+                    <span
+                        style="top: -15%; left: -15%"
+                        ontouchend="buzzerOff(event)"
+                        ontouchstart="buzzerOn(event)"
+                        class="material-icons-outlined buzzer"
+                    >
+                        sports</span
+                    >
+                    <span class="material-icons-outlined symbol" style="top: -15%; right: -15%" onclick="camClick()">
+                        videocam
+                    </span>
+                </div>
+            </div>
+            <div class="section3">
+                <div id="horizontalCameraWay" class="horizontalAxis">
+                    <div
+                        style="
+                            position: absolute;
+                            top: -30px;
+                            left: 50%;
+                            border-right: 1px dashed darkcyan;
+                            height: 60px;
+                        "
+                    ></div>
+                    <span
+                        id="horizontalCameraIcon"
+                        class="material-icons-outlined horizontalCameraIcon"
+                        draggable="true"
+                        ontouchmove="camHorMove(event)"
+                    >
+                        face_3
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <script>
+
+            var path = 'http://192.168.1.100:4000'
+
+            var values = {
+                circle: {
+                    el: null,
+                    x: null,
+                    y: null,
+                    radius: null,
+                    center: {
+                        x: null,
+                        y: null,
+                    },
+                },
+                wheel: {
+                    el: null,
+                    x: null,
+                    y: null,
+                    radius: null,
+                    center: {
+                        x: null,
+                        y: null,
+                    },
+                },
+                horizontalCameraWay: {
+                    pageDiffX: null,
+                    end: null,
+                    length: null,
+                    center: null,
+                },
+                horizontalCameraIcon: {
+                    el: null,
+                    x: null,
+                    y: null,
+                    radius: null,
+                    center: {
+                        x: null,
+                        y: null,
+                    },
+                },
+                pageDiff: {
+                    x: null,
+                    y: null,
+                },
+            };
+            var elementCircle = null;
+            var elementWheel = null;
+            var elementHorizontalCameraWay = null;
+            var elementHorizontalCameraIcon = null;
+
+            var lastHorAngle = null;
+
+            var vState = true;
+
+            window.addEventListener("load", () => {
+                elementWheel = document.getElementById("moveWheel");
+                elementCircle = document.getElementById("moveCircle");
+
+                values.wheel.radius = elementWheel.clientWidth / 2;
+                values.wheel.x = elementWheel.offsetLeft;
+                values.wheel.y = elementWheel.offsetTop;
+                values.wheel.center.x = values.wheel.x + values.wheel.radius;
+                values.wheel.center.y = values.wheel.y + values.wheel.radius;
+
+                values.circle.radius = elementCircle.clientWidth / 2;
+                values.circle.x = elementCircle.offsetLeft;
+                values.circle.y = elementCircle.offsetTop;
+                values.circle.center.x = values.circle.x + values.circle.radius;
+                values.circle.center.y = values.circle.y + values.circle.radius;
+
+                values.pageDiff.x = values.wheel.x + values.circle.radius;
+                values.pageDiff.y = values.wheel.y + values.circle.radius;
+
+                elementHorizontalCameraIcon = document.getElementById(
+                    "horizontalCameraIcon"
+                );
+                elementHorizontalCameraWay = document.getElementById(
+                    "horizontalCameraWay"
+                );
+                values.horizontalCameraIcon.radius =
+                    elementHorizontalCameraIcon.clientWidth / 2;
+
+                values.horizontalCameraWay.pageDiffX =
+                    elementHorizontalCameraWay.offsetLeft;
+
+                values.horizontalCameraWay.end =
+                    elementHorizontalCameraWay.offsetWidth +
+                    values.horizontalCameraWay.pageDiffX;
+
+                values.horizontalCameraWay.length =
+                    elementHorizontalCameraWay.offsetWidth;
+
+                values.horizontalCameraWay.center =
+                    values.horizontalCameraWay.length / 2;
+
+                console.log(values);
+            });
+
+            var camClick = () => {
+                setTimeout(() => {
+                    location.reload()
+                }, 1000);
+            }
+
+            var camVerticalMove = (event, direction) => {
+                let buttonState = true;
+                while (vState && buttonState) {
+                    $.ajax({
+                        type : 'POST',
+                        url: path+"/camVerticalMove",
+                        data:{
+                            direction
+                        }
+                    })
+                    buttonState = false;
+                    setTimeout(() => {
+                        buttonState = true;
+                    }, 100);
+                }
+            };
+            var camVerticalMoveStop = (event) => {
+            };
+
+            var camHorMove = (event) => {
+                event.preventDefault();
+                event.stopPropagation();
+
+                let xMove =
+                    event.touches[0].pageX -
+                    values.horizontalCameraWay.pageDiffX;
+                let xDiff = xMove - values.horizontalCameraIcon.radius;
+
+                if (
+                    event.touches[0].pageX >
+                        values.horizontalCameraWay.pageDiffX &&
+                    event.touches[0].pageX < values.horizontalCameraWay.end
+                ) {
+                    let pos =
+                        event.touches[0].pageX -
+                        values.horizontalCameraWay.pageDiffX;
+                    let way =
+                        values.horizontalCameraWay.end -
+                        values.horizontalCameraIcon.radius * 2;
+                    let angle =
+                        180-Math.round(Math.floor((pos / way) * 180) / 5) * 5;
+                    if (lastHorAngle != angle) {
+                        elementHorizontalCameraIcon.style.left = xDiff + "px";
+                        $.ajax({
+                            type : 'POST',
+                            url: path + "/camHorizontalMove",
+                            data:{
+                                angle
+                            }
+                        })
+                        lastHorAngle = angle;
+                    }
+                }
+            };
+
+            var touchmove = (event) => {
+                event.preventDefault();
+                event.stopPropagation();
+
+                let xMove = event.touches[0].pageX - values.pageDiff.x;
+                let yMove = event.touches[0].pageY - values.pageDiff.y;
+
+                let xDiff = xMove - values.circle.x;
+                let yDiff = values.circle.y - yMove;
+
+                xDiff = Math.floor(xDiff);
+                yDiff = Math.floor(yDiff);
+
+                console.log("x", xDiff);
+                console.log("y", yDiff);
+
+                if (Math.hypot(xDiff, yDiff) <= values.wheel.radius) {
+                    elementCircle.style.top = yMove + "px";
+                    elementCircle.style.left = xMove + "px";
+                    $.ajax({
+                        type : 'POST',
+                        url: path + "/move",
+                        data:{
+                            x: xDiff,
+                            y: yDiff,
+                        }
+                    })
+                }
+            };
+
+            var moveEnd = (event) => {
+                elementCircle.style.top = values.circle.y + "px";
+                elementCircle.style.left = values.circle.x + "px";
+                $.ajax({
+                    url: path + "/moveStop",
+                })
+            };
+
+            var leftPressed = () => {
+                $.ajax({
+                    url: path + "/left",
+                })
+            };
+
+            var rightPressed = () => {
+                $.ajax({
+                    url: path + "/right",
+                })
+            };
+
+            var buzzerOn = () => {
+                $.ajax({
+                    url: path + "/buzzerOn",
+                })
+            };
+            var buzzerOff = () => {
+                $.ajax({
+                    url: path + "/buzzerOff",
+                })
+            };
+        </script>
+    </body>
+</html>
